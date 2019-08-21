@@ -1,0 +1,57 @@
+.chat-container {
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-login {
+  background-color: #27496f;
+  color: #ffffff;
+  text-transform: uppercase;
+  border-radius: 0 0 5px 0;
+}
+
+.btn-login:hover {
+  color: #ffffff;
+}
+
+form {
+  width: 30%;
+}
+
+form input {
+  text-align: center;
+}
+
+form input::placeholder {
+  text-transform: uppercase;
+}
+
+.message-container {
+  width: 60%;
+  height: 70%;
+  background-color: #16161d;
+  border-radius: 5px 5px 0 0;
+  padding: 10px 15px;
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: end;
+}
+
+.message {
+  background-color: #27496f;
+  width: 50%;
+  color: #ffffff;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.input-container {
+  width: 60%;
+}
