@@ -30,6 +30,10 @@ form input::placeholder {
   text-transform: uppercase;
 }
 
+#screen {
+  overflow-x: hidden;
+}
+
 .message-container {
   width: 60%;
   height: 70%;
@@ -45,11 +49,20 @@ form input::placeholder {
 }
 
 .message {
-  background-color: #27496f;
   width: 50%;
-  color: #ffffff;
   margin-top: 5px;
   border-radius: 5px;
+  overflow-wrap: break-word;
+}
+
+.mine {
+  background-color: #27496f;
+  color: #ffffff;
+}
+
+.yours {
+  background-color: #e8e8e8;
+  color: #000000;
 }
 
 .input-container {
