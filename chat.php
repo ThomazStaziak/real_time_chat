@@ -1,8 +1,10 @@
 <?php 
   session_start();
-
-  if ($_POST && !empty($_POST['username'])) $_SESSION['username'] = $_POST['username'];
-  else header('Location: index.html');
+  require 'utils/php/db_functions.php';
+  if ($_POST && !empty($_POST['username'])) 
+    $_SESSION['username'] = $_POST['username'];
+  else 
+    header('Location: index.html');
 ?>
 
 <!DOCTYPE html>
@@ -11,6 +13,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- <meta http-equiv="refresh" content="5"> -->
     <title>Chat PHP</title>
     <!-- bootstrap -->
     <link
@@ -40,6 +43,8 @@
       crossorigin="anonymous"
     ></script>
 
+    <!-- custom scripts -->
+    <script defer src="utils/js/scrollDown.js"></script>
     <!-- pusher scripts -->
     <script defer src="https://js.pusher.com/5.0/pusher.min.js"></script>
     <script defer src="utils/js/listener.js"></script>
@@ -48,7 +53,15 @@
     <div class="chat-container">
       <h1>Hey <?= $_SESSION['username'] ?> welcome to the chat</h1>
       <div id="screen" class="message-container">
-        
+        <?php foreach(getMessages() as $chat) : ?>
+          <div class="<?= $_SESSION['username'] == $chat['username'] ? 'mine' : 'yours' ?> message">
+            <div class="row w-100 d-flex justify-content-between p-2 m-0">
+              <span><b><?= $chat['username'] ?></b></span>
+              <span><?= substr($chat['time'], 0, 5)?></span>
+            </div>
+            <p class="p-2"><?= $chat['message'] ?></p>
+          </div>
+        <?php endforeach; ?>
       </div>
       <div class="input-container row">
         <input
@@ -70,5 +83,11 @@
         </div>
     </div>
     </div>
+
+    <script>
+      window.onload = () => {
+        scrollDown('#screen', 10)
+      }
+    </script>
   </body>
 </html>
