@@ -1,10 +1,32 @@
 <?php 
   session_start();
-  require 'utils/php/db_functions.php';
-  if ($_POST && !empty($_POST['username'])) 
+  require_once './vendor/autoload.php';
+  require_once './utils/php/db_functions.php';
+
+  $app_id = '846919';
+  $app_key = '2fb071cffdac6f3ff0d7';
+  $app_secret = 'b06a98782716d59c6079';
+  $options = [
+    'cluster' => 'us2',
+    'useTLS' => true
+  ];
+  
+  $pusher = new Pusher\Pusher(
+    $app_key, 
+    $app_secret, 
+    $app_id, 
+    $options
+  );  
+
+  if ($_POST && !empty($_POST['username'])) {
     $_SESSION['username'] = $_POST['username'];
-  else 
+    setcookie('username', $_POST['username']);
+    insertOnlineUser($_POST['username']);
+    
+    $pusher->trigger('channel', 'userAction', getOnlineUsers());
+  } else {
     header('Location: index.html');
+  }
 ?>
 
 <!DOCTYPE html>
@@ -22,8 +44,14 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="styles/global.css" />
-    <link rel="stylesheet" href="styles/chat.css" />
+    <link
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./assets/css/global.css" />
+    <link rel="stylesheet" href="./assets/css/chat.css" />
     <script
       defer
       src="https://code.jquery.com/jquery-3.4.1.js"
@@ -45,48 +73,80 @@
 
     <!-- custom scripts -->
     <script defer src="utils/js/scrollDown.js"></script>
+    <script defer src="utils/js/getCookie.js"></script>
     <!-- pusher scripts -->
     <script defer src="https://js.pusher.com/5.0/pusher.min.js"></script>
     <script defer src="utils/js/listener.js"></script>
   </head>
   <body>
-    <div class="chat-container">
-      <h1>Hey <?= $_SESSION['username'] ?> welcome to the chat</h1>
-      <div id="screen" class="message-container">
-        <?php foreach(getMessages() as $chat) : ?>
-          <div class="<?= $_SESSION['username'] == $chat['username'] ? 'mine' : 'yours' ?> message">
-            <div class="row w-100 d-flex justify-content-between p-2 m-0">
-              <span><b><?= $chat['username'] ?></b></span>
-              <span><?= substr($chat['time'], 0, 5)?></span>
+    <main>
+      <header>
+        <nav class="navbar navbar-light bg-transparent">
+          <a href="index.html" class="navbar-brand">
+            <img
+              src="./assets/img/logo.png"
+              width="30"
+              height="30"
+              class="d-inline-block align-top"
+              alt=""
+            />
+            Chatzin
+          </a>
+          <form action="utils/php/logout.php" method="POST" class="form-inline">
+            <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">
+              Logout
+            </button>
+          </form>
+        </nav>
+      </header>
+      <div class="chat-container">
+        <div class="col-sm-6 frame screen">
+          <ul id="screen">
+            <?php foreach(getMessages() as $chat) : ?>
+              <li style="width:100%">
+                <div class="<?= $chat['username'] === $_SESSION['username'] ? 'msj-rta' : 'msj' ?> macro">
+                  <div class="text <?= $chat['username'] === $_SESSION['username'] ? 'text-l' : 'text-r' ?>">
+                    <?php if($chat['username'] != $_SESSION['username']) : ?>
+                      <p class="user font-weight-bold"><?= $chat['username'] ?></p>
+                    <?php endif; ?>
+                    <p class="message"><?= $chat['message'] ?></p>
+                    <p class="time"><small><?= substr($chat['time'], 0, 5)?></small></p>
+                  </div>
+                </div>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+          <form id="form" class="input-container">
+              <input
+              id="username"
+              type="hidden"
+              value="<?= $_SESSION['username'] ?>"
+              placeholder="Type your username"
+            />
+            <input id="message" type="text" placeholder="Type a message" />
+            <button type="submit">
+              <i class="fa fa-arrow-right"></i>
+            </button>
+          </form>
+        </div>
+        <div class="col-sm-3 online-users">
+          <h4 class="mb-6">Online Users</h4>
+          <div>
+            <p class="text-success font-weight-bold"><?= $_SESSION['username'] ?></p>
+            <div class="users">
+              <?php foreach(getOnlineUsers() as $onlineUser) : ?>
+                <?php if ($onlineUser['username'] != $_SESSION['username']) : ?>
+                  <p class="text-success"><?= $onlineUser['username'] ?></p>
+                <?php endif; ?>
+              <?php endforeach; ?>
             </div>
-            <p class="p-2"><?= $chat['message'] ?></p>
           </div>
-        <?php endforeach; ?>
+        </div>
       </div>
-      <div class="input-container row">
-        <input
-          id="username"
-          type="hidden"
-          value="<?= $_SESSION['username'] ?>"
-          class="form-control"
-          placeholder="Type your username"
-        />
-        <div class="form-group col-8 p-0">
-          <input
-            id="message"
-            class="form-control"
-            placeholder="Type your message"
-          >
-        </div>
-        <div class="form-group col-4 p-0">
-          <button id="button" class="btn btn-login col-12 h-100">Send</button>
-        </div>
-    </div>
-    </div>
-
+    </main>
     <script>
       window.onload = () => {
-        scrollDown('#screen', 10)
+        scrollDown('#screen', 100)
       }
     </script>
   </body>
