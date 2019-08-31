@@ -11,8 +11,8 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="styles/global.css" />
-    <link rel="stylesheet" href="styles/chat.css" />
+    <link rel="stylesheet" href="./assets/css/global.css" />
+    <link rel="stylesheet" href="./assets/css/chat.css" />
     <script
       defer
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -33,14 +33,9 @@
     ></script>
   </head>
   <body>
-    <div class="chat-container">
-      <img
-        src="https://cdn.freebiesupply.com/logos/large/2x/hipchat-logo-png-transparent.png"
-        alt="logo"
-        class="mb-4"
-        height="100"
-      />
-      <form action="chat.php" method="POST">
+    <div class="login-container">
+      <img src="./assets/img/logo.png" alt="logo" class="mb-4" height="100" />
+      <form class="form-login" action="chat.php" method="POST">
         <div class="form-group">
           <input
             id="usernameInput"
