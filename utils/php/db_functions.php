@@ -1,5 +1,5 @@
 <?php
-  $conn = new PDO('pgsql:host=localhost;port=5432;dbname=chat_php;user=postgres;password=docker');
+  $conn = new PDO('pgsql:host=ec2-54-83-9-36.compute-1.amazonaws.com;port=5432;dbname=dfel38del3b62m;user=jukfsxawpgmpax;password=1af5095fd05596b256060aa8c342d38b99326506546bb30b0e24ed97fd5c2547');
   
   function insertChat($username, $message, $time) {
     try {
