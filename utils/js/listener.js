@@ -1,5 +1,6 @@
 $("document").ready(function() {
-  $("#button").click(function() {
+  $("#form").submit(function(evt) {
+    evt.preventDefault();
     const username = $("#username").val();
     const message = $("#message").val();
 
@@ -26,20 +27,47 @@ $("document").ready(function() {
   });
 
   const channel = pusher.subscribe("channel");
-  channel.bind("chat", function(data) {
+  channel.bind("chat", data => {
     console.log(data);
+    const loggedUser = getCookie("username");
     const chat = data[0];
-    const className = data[1];
+    const messageSender = data[1];
+
+    console.log(loggedUser, messageSender);
+
     $("#screen").append(
-      `<div class="${className} message">
-          <div class="row w-100 d-flex justify-content-between p-2 m-0">
-            <span><b>${chat.username}</b></span>
-            <span>${chat.time.slice(0, 5)}</span>
+      `
+        <li style="width:100%">
+          <div class="${
+            loggedUser === messageSender ? "msj-rta" : "msj"
+          } macro">
+            <div class="text ${
+              loggedUser === messageSender ? "text-l" : "text-r"
+            }">
+            ${
+              loggedUser != messageSender
+                ? `<p class='user font-weight-bold'>${chat.username}</p>`
+                : ""
+            }
+              <p class="message">${chat.message}</p>
+              <p class="time"><small>${chat.time.slice(0, 5)}</small></p>
+            </div>
           </div>
-          <p class="p-2">${chat.message}</p>
-        </div>`
+        </li>
+      `
     );
 
     scrollDown("#screen", 100);
+  });
+
+  channel.bind("userAction", data => {
+    const loggedUser = getCookie("username");
+    console.log(data, loggedUser);
+    let html = "";
+    data.forEach(user => {
+      if (loggedUser != user.username)
+        html += `<p class="text-success">${user.username}</p>`;
+    });
+    $(".users").html(html);
   });
 });
