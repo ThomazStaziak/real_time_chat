@@ -18,14 +18,10 @@
     $options
   );
   
-  insert($_POST['username'], $_POST['message'], date('H:i', time()));
-  $messages = getMessages();
-  $message = end($messages);
-
-  $className = $_SESSION['username'] == $_POST['username']
-  ? 'mine'
-  : 'yours';
+  insertChat($_POST['username'], $_POST['message'], date('H:i', time()));
+  $chats = getMessages();
+  $chat = end($chats);
   
-  $pusher->trigger('channel', 'chat', [$message, $className]);
+  $pusher->trigger('channel', 'chat', [$chat, $_SESSION['username']]);
 ?>
   
