@@ -19,9 +19,10 @@
   );  
 
   if ($_POST && !empty($_POST['username'])) {
-    $_SESSION['username'] = $_POST['username'];
-    setcookie('username', $_POST['username']);
-    insertOnlineUser($_POST['username']);
+    $username = implode("", explode(" ",trim($_POST['username'])));
+    $_SESSION['username'] = $username;
+    setcookie('username', $username);
+    insertOnlineUser($username);
     
     $pusher->trigger('channel', 'userAction', getOnlineUsers());
   } else {
